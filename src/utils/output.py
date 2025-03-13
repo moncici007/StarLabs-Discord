@@ -14,7 +14,7 @@ from prompt_toolkit.styles import Style
 
 
 def show_logo():
-    """Отображает стильный логотип STARLABS"""
+    """显示STARLABS的时尚标志"""
     # Очищаем экран
     os.system("cls" if os.name == "nt" else "clear")
 
@@ -65,9 +65,8 @@ def show_dev_info():
     table.add_row("✨ StarLabs Discord Bot 2.0 ✨")
     table.add_row("─" * 43)
     table.add_row("")
-    table.add_row("⚡ GitHub: [link]https://github.com/0xStarLabs[/link]")
-    table.add_row("👤 Dev: [link]https://t.me/StarLabsTech[/link]")
-    table.add_row("💬 Chat: [link]https://t.me/StarLabsChat[/link]")
+    table.add_row("⚡ GitHub: [link]https://github.com/moncici007[/link]")
+    table.add_row("👤 Dev: [link]https://x.com/moncici_is_girl[/link]")
     table.add_row("")
 
     # Выводим таблицу с отступом

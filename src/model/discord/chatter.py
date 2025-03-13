@@ -385,7 +385,7 @@ class DiscordChatter:
                 Generate a natural response continuing this conversation.
             """
 
-            ok, gpt_response = ask_chatgpt(
+            ok, gpt_response = await ask_chatgpt(
                 random.choice(self.config.CHAT_GPT.API_KEYS),
                 self.config.CHAT_GPT.MODEL,
                 user_message,
@@ -421,39 +421,12 @@ class DiscordChatter:
             
             if not success:
                 logger.warning(f"{self.account.index} | DeepSeek API失败，切换到ChatGPT: {response}")
-                return
-                # return await self._gpt_referenced_messages(main_message_content, referenced_message_content)
+                return await self._gpt_referenced_messages(main_message_content, referenced_message_content)
                 
             return response
         except Exception as e:
             logger.warning(f"{self.account.index} | DeepSeek错误，切换到ChatGPT: {str(e)}")
-            return
-            # return await self._gpt_referenced_messages(main_message_content, referenced_message_content)
-
-    async def _gpt_batch_messages(self, messages_contents: list[str]) -> str:
-        """使用GPT基于聊天历史生成新消息"""
-        try:
-            user_message = f"""
-                Chat history: {messages_contents}
-            """
-
-            ok, gpt_response = ask_chatgpt(
-                random.choice(self.config.CHAT_GPT.API_KEYS),
-                self.config.CHAT_GPT.MODEL,
-                user_message,
-                GPT_BATCH_MESSAGES_SYSTEM_PROMPT,
-                proxy=self.config.CHAT_GPT.PROXY_FOR_CHAT_GPT,
-            )
-
-            if not ok:
-                raise Exception(gpt_response)
-
-            return gpt_response
-        except Exception as e:
-            logger.error(
-                f"{self.account.index} | Error in chatter _gpt_batch_messages: {e}"
-            )
-            raise e
+            return await self._gpt_referenced_messages(main_message_content, referenced_message_content)
 
     async def _deepseek_batch_messages(self, messages_contents: str) -> str:
         """使用DeepSeek基于聊天历史生成新消息，如果失败则使用ChatGPT"""
@@ -470,11 +443,34 @@ class DiscordChatter:
             
             if not success:
                 logger.warning(f"{self.account.index} | DeepSeek API失败，切换到ChatGPT: {response}")
-                return
-                # return await self._gpt_batch_messages(messages_contents)
+                return await self._gpt_batch_messages(messages_contents)
                 
             return response
         except Exception as e:
             logger.warning(f"{self.account.index} | DeepSeek错误，切换到ChatGPT: {str(e)}")
-            return 
-            # return await self._gpt_batch_messages(messages_contents)
+            return await self._gpt_batch_messages(messages_contents)
+
+    async def _gpt_batch_messages(self, messages_contents: str) -> str:
+        """使用GPT基于聊天历史生成新消息"""
+        try:
+            user_message = f"""
+                Chat history: {messages_contents}
+            """
+
+            ok, gpt_response = await ask_chatgpt(
+                random.choice(self.config.CHAT_GPT.API_KEYS),
+                self.config.CHAT_GPT.MODEL,
+                user_message,
+                GPT_BATCH_MESSAGES_SYSTEM_PROMPT,
+                proxy=self.config.CHAT_GPT.PROXY_FOR_CHAT_GPT,
+            )
+
+            if not ok:
+                raise Exception(gpt_response)
+
+            return gpt_response
+        except Exception as e:
+            logger.error(
+                f"{self.account.index} | Error in chatter _gpt_batch_messages: {e}"
+            )
+            raise e
